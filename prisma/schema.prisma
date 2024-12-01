@@ -51,11 +51,13 @@ model Jadwal {
   mataKuliahId String
   mataKuliah   MataKuliah @relation(fields: [mataKuliahId], references: [id])
   hari         Hari
-  jamMulai     DateTime
-  jamSelesai   DateTime
+  jamMulai     DateTime   @db.Time
+  jamSelesai   DateTime   @db.Time
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   Presensi     Presensi[]
+
+  @@map("jadwal")
 }
 
 enum Hari {
@@ -76,4 +78,6 @@ model Presensi {
   waktuSelesai DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@map("presensi")
 }
