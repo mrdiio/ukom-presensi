@@ -2,7 +2,8 @@
     "moduleFileExtensions": [
         "js",
         "json",
-        "ts"
+        "ts",
+        "tsx"
     ],
     "rootDir": "../src",
     "testRegex": ".*\\.spec\\.ts$",
@@ -15,9 +16,16 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-        "^src/(.*)$": "<rootDir>/$1"
+        "^@/(.*)$": "<rootDir>/$1",
+        "^@components/(.*)$": "<rootDir>/components/$1",
+        "^@lib/(.*)$": "<rootDir>/lib/$1",
+        "^@utils/(.*)$": "<rootDir>/utils/$1"
     },
     "setupFiles": [
         "./jest-setup.ts"
+    ],
+    "moduleDirectories": [
+        "node_modules",
+        "<rootDir>/"
     ]
 }
