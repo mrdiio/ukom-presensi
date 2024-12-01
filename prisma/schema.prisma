@@ -12,3 +12,72 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Dosen {
+  id        String     @id @default(cuid())
+  nama      String
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Jadwal    Jadwal[]
+  Presensi  Presensi[]
+
+  @@map("dosen")
+}
+
+model MataKuliah {
+  id        String   @id @default(cuid())
+  kode      String   @unique
+  nama      String
+  sks       Int
+  jenis     Jenis
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Jadwal    Jadwal[]
+
+  @@map("matakuliah")
+}
+
+enum Jenis {
+  TEORI
+  PRAKTIKUM
+}
+
+model Jadwal {
+  id           String     @id @default(cuid())
+  dosenId      String
+  dosen        Dosen      @relation(fields: [dosenId], references: [id])
+  mataKuliahId String
+  mataKuliah   MataKuliah @relation(fields: [mataKuliahId], references: [id])
+  hari         Hari
+  jamMulai     DateTime   @db.Time
+  jamSelesai   DateTime   @db.Time
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  Presensi     Presensi[]
+
+  @@map("jadwal")
+}
+
+enum Hari {
+  SENIN
+  SELASA
+  RABU
+  KAMIS
+  JUMAT
+}
+
+model Presensi {
+  id           String   @id @default(cuid())
+  jadwalId     String
+  jadwal       Jadwal   @relation(fields: [jadwalId], references: [id])
+  dosensId     String
+  dosens       Dosen    @relation(fields: [dosensId], references: [id])
+  waktuMulai   DateTime
+  waktuSelesai DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("presensi")
+}
