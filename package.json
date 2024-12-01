@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest --config ./config/jest.unit-test.config.json --runInBand",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage --runInBand",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./config/jest.e2e-test.config.json --runInBand",
+    "test:integration": "jest --config ./config/jest.integration-test.config.json --runInBand --forceExit"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -28,6 +34,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.2",
+    "reflect-metadata": "^0.2.2",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
@@ -39,6 +46,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.17",
+    "jest": "^29.7.0",
     "postcss": "^8",
     "prisma": "^6.0.0",
     "tailwindcss": "^3.4.1",
