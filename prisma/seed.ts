@@ -28,44 +28,63 @@ async function main() {
     })),
   })
 
-  const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']
-
   const generateJadwal = async () => {
-    const jadwals: {
+    const dosens = await db.dosen.findMany()
+    const makul = await db.mataKuliah.findMany()
+
+    const startDate = new Date('2024-12-03')
+
+    const days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT']
+
+    const jadwalData: {
       dosenId: string
       mataKuliahId: string
       hari: string
+      tanggal: string
       jamMulai: string
       jamSelesai: string
     }[] = []
 
-    const dosens = await db.dosen.findMany()
-    const makul = await db.mataKuliah.findMany()
-
     makul.forEach(async (mk, i) => {
-      const dosenId = dosens[i % dosens.length].id
+      const dosenId = dosens[i % dosens.length]
 
-      const hari = days[i % days.length]
-      const jamMulai = new Date()
-      jamMulai.setHours(8 + (i % days.length), 0, 0)
+      let durasi
 
-      console.log()
+      // tentukan durasi berdasarkan jenis mata kuliah
+      if (mk.jenis === 'TEORI') {
+        durasi = mk.sks * 55
+      } else {
+        durasi = mk.sks * 120
+      }
 
+      // tentukan hari dan jam mulai
+      const hariIndex = i % days.length
+      const hari = days[hariIndex]
+
+      // Tentukan tanggal berdasarkan hariIndex
+      const jamMulai = new Date(startDate)
+      jamMulai.setHours(8 + (hariIndex % 5)) // Jam mulai bervariasi setiap hari
+      jamMulai.setMinutes(0)
+
+      // hitung jam selesai
       const jamSelesai = new Date(jamMulai)
-      const menitPerSks = mk.jenis === 'TEORI' ? 55 : 120
+      jamSelesai.setMinutes(jamMulai.getMinutes() + durasi)
 
-      jamSelesai.setMinutes(jamMulai.getMinutes() + mk.sks * menitPerSks)
-
-      jadwals.push({
-        dosenId,
+      jadwalData.push({
+        dosenId: dosenId.id,
         mataKuliahId: mk.id,
-        hari,
+        hari: hari,
+        tanggal: new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate() + hariIndex
+        ).toISOString(),
         jamMulai: jamMulai.toISOString(),
         jamSelesai: jamSelesai.toISOString(),
       })
     })
 
-    return jadwals
+    return jadwalData
   }
 
   const jadwals = await generateJadwal()
