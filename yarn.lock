@@ -195,6 +195,11 @@
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-6.0.0.tgz#87dfdd40e3475efa634dac30e891a4d05aeeed0b"
   integrity sha512-tOBhG35ozqZ/5Y6B0TNOa6cwULUW8ijXqBXcgb12bfozqf6eGMyGs+jphywCsj6uojv5lAZZnxVSoLMVebIP+g==
 
+"@prisma/client@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-6.0.0.tgz#87dfdd40e3475efa634dac30e891a4d05aeeed0b"
+  integrity sha512-tOBhG35ozqZ/5Y6B0TNOa6cwULUW8ijXqBXcgb12bfozqf6eGMyGs+jphywCsj6uojv5lAZZnxVSoLMVebIP+g==
+
 "@prisma/debug@6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@prisma/debug/-/debug-6.0.0.tgz#4f0ce75ae464de0bb2cd3fe5775527943c502d4e"
@@ -767,6 +772,13 @@ chokidar@^3.6.0:
     readdirp "~3.6.0"
   optionalDependencies:
     fsevents "~2.3.2"
+
+class-variance-authority@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/class-variance-authority/-/class-variance-authority-0.7.1.tgz#4008a798a0e4553a781a57ac5177c9fb5d043787"
+  integrity sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==
+  dependencies:
+    clsx "^2.1.1"
 
 class-variance-authority@^0.7.1:
   version "0.7.1"
@@ -1927,6 +1939,11 @@ lru-cache@^10.2.0:
   version "10.4.3"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.4.3.tgz#410fc8a17b70e598013df257c2446b7f3383f119"
   integrity sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==
+
+lucide-react@^0.462.0:
+  version "0.462.0"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.462.0.tgz#cb95b1dde558be51b7ae247290f7bb5f197880bf"
+  integrity sha512-NTL7EbAao9IFtuSivSZgrAh4fZd09Lr+6MTkqIxuHaH2nnYiYIzXPo06cOxHg9wKLdj6LL8TByG4qpePqwgx/g==
 
 lucide-react@^0.462.0:
   version "0.462.0"

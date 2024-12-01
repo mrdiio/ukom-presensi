@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "jadwal" ALTER COLUMN "jamMulai" SET DATA TYPE TIME,
+ALTER COLUMN "jamSelesai" SET DATA TYPE TIME;
