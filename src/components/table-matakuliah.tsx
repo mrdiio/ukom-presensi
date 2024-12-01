@@ -9,43 +9,111 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from './ui/button';
-import DialogDetail from './dialog-detail';
 import { useToast } from '@/hooks/use-toast';
+import { $Enums } from '@prisma/client';
+import { convertIsoTime } from '@/lib/convert-iso-time';
+import { convertDate } from '@/lib/convert-date';
+import { postPresensiMulai } from '@/actions/post-presensi-mulai';
+import { postPresensiSelesai } from '@/actions/post-presensi-selesai';
+import { Badge } from './ui/badge';
+import { useEffect, useState } from 'react';
+import { getJadwalMataKuliah } from '@/actions/get-jadwal-mata-kuliah';
+import { isAbsenSelesaiValid } from '@/lib/is-absen-selesai-valid';
+import { isAbsenMulaiValid } from '@/lib/is-absen-masuk-valid';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function TableMatakuliah({ data }: { data: any[] }) {
+export default function TableMatakuliah({
+  email,
+  data,
+}: {
+  email: string;
+  data: {
+    id: string;
+    kodeMatakuliah: string;
+    nama: string;
+    sks: number;
+    jenis: $Enums.Jenis;
+    jamMulai: Date;
+    jamSelesai: Date;
+    hari: $Enums.Hari;
+    tanggal: Date;
+    absenMulai: Date | null;
+    absenSelesai: Date | null;
+  }[];
+}) {
+  const [dataJadwalMataKuliah, setDataJadwalMataKuliah] = useState(data);
+  const [triggerRefetch, setTriggerRefetch] = useState(false);
   const { toast } = useToast();
 
-  function handleAbsenDatang() {
+  async function handleAbsenDatang(jadwalId: string) {
     try {
-      toast({
-        title: 'Success : Sudah absen datang',
-        description: 'Friday, February 10, 2023 at 5:57 PM',
+      const absenMulai = await postPresensiMulai({
+        email: `${email}`,
+        jadwalId: jadwalId,
+        jamMulai: new Date().toISOString(),
       });
+
+      if (absenMulai.id) {
+        toast({
+          title: 'Berhasil absen datang',
+          description: `${convertIsoTime(`${absenMulai.waktuMulai}`, 0)}`,
+        });
+
+        setTriggerRefetch(true);
+        return false;
+      }
+
+      throw new Error('Gagal absen datang');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Gagal : Waktu tidak sesuai',
-        description: 'Friday, February 10, 2023 at 5:57 PM',
+        title: 'Gagal absen datang',
+        description: error.message,
       });
     }
   }
-  function handleAbsenPulang() {
+
+  async function handleAbsenPulang(jadwalId: string) {
     try {
-      toast({
-        title: 'Success : Sudah absen pulang',
-        description: 'Friday, February 10, 2023 at 5:57 PM',
+      const absenSelesai = await postPresensiSelesai({
+        email: `${email}`,
+        jadwalId: jadwalId,
+        jamSelesai: new Date().toISOString(),
       });
+
+      if (absenSelesai.id) {
+        toast({
+          title: 'Berhasil absen selesai',
+          description: `${convertIsoTime(`${absenSelesai.waktuSelesai}`, 0)}`,
+        });
+
+        setTriggerRefetch(true);
+        return false;
+      }
+
+      throw new Error('Gagal absen selesai');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Gagal : Waktu tidak sesuai',
-        description: 'Friday, February 10, 2023 at 5:57 PM',
+        title: 'Gagal absen selesai',
+        description: error.message,
       });
     }
   }
+
+  useEffect(() => {
+    (async () => {
+      if (triggerRefetch) {
+        const newData = await getJadwalMataKuliah({
+          email: `${email}`,
+        });
+        setDataJadwalMataKuliah(newData);
+        setTriggerRefetch(false);
+      }
+    })();
+  }, [email, triggerRefetch]);
 
   return (
     <div>
@@ -58,35 +126,68 @@ export default function TableMatakuliah({ data }: { data: any[] }) {
             <TableHead>Nama</TableHead>
             <TableHead className='text-center'>SKS</TableHead>
             <TableHead className='text-center'>Jenis</TableHead>
+            <TableHead className='text-center'>Tanggal</TableHead>
+            <TableHead className='text-center'>Hari</TableHead>
             <TableHead className='text-center'>Jam Mulai</TableHead>
             <TableHead className='text-center'>Jam Selesai</TableHead>
             <TableHead className='text-center'>Absen</TableHead>
-            <TableHead className='text-right'>Detail</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item, index) => (
+          {dataJadwalMataKuliah.map((item, index) => (
             <TableRow key={index}>
-              <TableCell className='font-medium'>{item.id}</TableCell>
+              <TableCell className='font-medium'>{index + 1}</TableCell>
               <TableCell>{item.kodeMatakuliah}</TableCell>
               <TableCell>{item.nama}</TableCell>
               <TableCell className='text-center'>{item.sks}</TableCell>
               <TableCell className='text-right'>{item.jenis}</TableCell>
-              <TableCell className='text-right'>{item.jamMulai}</TableCell>
-              <TableCell className='text-right'>{item.jamSelesai}</TableCell>
-              <TableCell className='text-right flex flex-wrap gap-2 justify-center'>
-                <Button onClick={() => handleAbsenDatang()}>
-                  Absen Datang
-                </Button>
-                <Button
-                  variant='destructive'
-                  onClick={() => handleAbsenPulang()}
-                >
-                  Absen Pulang
-                </Button>
+              <TableCell className='text-right'>
+                {' '}
+                {`${convertDate(`${item.tanggal}`, 7)}`}
+              </TableCell>
+              <TableCell className='text-right'>{item.hari}</TableCell>
+              <TableCell className='text-right'>
+                {`${convertIsoTime(`${item.jamMulai}`, 7)}`}
               </TableCell>
               <TableCell className='text-right'>
-                <DialogDetail />
+                {`${convertIsoTime(`${item.jamSelesai}`, 7)}`}
+              </TableCell>
+              <TableCell className='text-right flex flex-wrap gap-2 justify-center items-center'>
+                {item.absenMulai ? (
+                  <Badge>{convertIsoTime(`${item.absenMulai}`, 0)}</Badge>
+                ) : (
+                  <Button
+                    onClick={() => handleAbsenDatang(item.id)}
+                    disabled={
+                      !isAbsenMulaiValid({
+                        currentTime: new Date().toISOString(),
+                        jamMulai: `${item.jamMulai}`,
+                        date: `${item.tanggal}`,
+                      })
+                    }
+                  >
+                    Absen Datang
+                  </Button>
+                )}
+                {item.absenSelesai ? (
+                  <Badge variant={'destructive'}>
+                    {convertIsoTime(`${item.absenSelesai}`, 0)}
+                  </Badge>
+                ) : (
+                  <Button
+                    variant={'destructive'}
+                    onClick={() => handleAbsenPulang(item.id)}
+                    disabled={
+                      !isAbsenSelesaiValid({
+                        currentTime: new Date().toISOString(),
+                        jamSelesai: `${item.jamSelesai}`,
+                        date: `${item.tanggal}`,
+                      })
+                    }
+                  >
+                    Absen Pulang
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           ))}

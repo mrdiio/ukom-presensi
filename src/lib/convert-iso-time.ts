@@ -1,4 +1,4 @@
-export function convertIsoTime(isoTime: string, utcNumber: number): Date {
+export function convertIsoTime(isoTime: string, utcNumber: number): string {
   if (!isoTime || typeof isoTime !== 'string') {
     throw new Error('Invalid input: isoTime must be a non-empty string');
   }
@@ -10,5 +10,9 @@ export function convertIsoTime(isoTime: string, utcNumber: number): Date {
 
   const utcOffset = utcNumber * 60 * 60 * 1000; // convert hours to milliseconds
   const localTime = new Date(date.getTime() + utcOffset);
-  return localTime;
+
+  const hours = localTime.getHours().toString().padStart(2, '0');
+  const minutes = localTime.getMinutes().toString().padStart(2, '0');
+
+  return `${hours}:${minutes}`;
 }
