@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest --config ./config/jest.unit-test.config.json --runInBand",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage --runInBand",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./config/jest.e2e-test.config.json --runInBand",
+    "test:integration": "jest --config ./config/jest.integration-test.config.json --runInBand --forceExit"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
