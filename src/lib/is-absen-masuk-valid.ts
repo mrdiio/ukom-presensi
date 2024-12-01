@@ -1,23 +1,40 @@
-export function isAbsenMulaiValid(params: {
-  currentTime: string;
-  date: string;
-  jamMulai: string;
-}): boolean {
-  const { currentTime, date, jamMulai } = params;
+import { Hari } from '@prisma/client';
 
-  const currentDate = new Date(currentTime).toISOString().split('T')[0];
-  if (currentDate !== date) {
+export function isAbsenMulaiValid(params: {
+  hari: Hari;
+  jamMulai: Date;
+  jamSelesai: Date;
+}): boolean {
+  const currentTime = new Date();
+  const days = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+  const { jamMulai, hari, jamSelesai } = params;
+
+  const currentDay = days[currentTime.getDay()];
+
+  if (hari !== currentDay) {
     return false;
   }
 
-  const currentTimeDate = new Date(currentTime);
-  const jamMulaiDate = new Date(jamMulai);
-  const tenMinutesBeforeJamMulai = new Date(
-    jamMulaiDate.getTime() - 10 * 60 * 1000
-  );
+  const currentformattedDate = currentTime.toISOString().split('T')[0];
+  const jamMulaiConverted = jamMulai.toTimeString().split(' ')[0];
+  const jamSelesaiConverted = jamSelesai.toTimeString().split(' ')[0];
 
-  return (
-    currentTimeDate <= jamMulaiDate &&
-    currentTimeDate >= tenMinutesBeforeJamMulai
-  );
+  const unixTimeJamMulai = new Date(
+    `${currentformattedDate} ${jamMulaiConverted}`
+  ).getTime();
+  const unixTimeJamSelesai = new Date(
+    `${currentformattedDate} ${jamSelesaiConverted}`
+  ).getTime();
+  const unixTimeCurrentTime = currentTime.getTime();
+
+  const tenMinutesInMilliseconds = 10 * 60 * 1000;
+
+  if (
+    unixTimeCurrentTime >= unixTimeJamMulai - tenMinutesInMilliseconds && // 10 minutes before jamMulai
+    unixTimeCurrentTime <= unixTimeJamSelesai + tenMinutesInMilliseconds // 10 minutes after jamSelesai
+  ) {
+    return true;
+  }
+
+  return false;
 }

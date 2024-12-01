@@ -2,6 +2,7 @@
 
 import { isAbsenSelesaiValid } from '@/lib/is-absen-selesai-valid';
 import { prismaClient } from '@/lib/prisma-client';
+import { Hari } from '@prisma/client';
 
 interface PostPresensiPayload {
   email: string;
@@ -18,9 +19,9 @@ export async function postPresensiSelesai(payload: PostPresensiPayload) {
     });
 
     const isValid = isAbsenSelesaiValid({
-      currentTime: payload.jamSelesai,
-      jamSelesai: `${jadwal?.jamSelesai}`,
-      date: `${jadwal?.tanggal}`,
+      jamMulai: jadwal?.jamMulai as Date,
+      jamSelesai: jadwal?.jamSelesai as Date,
+      hari: jadwal?.hari as Hari,
     });
 
     if (!isValid) {

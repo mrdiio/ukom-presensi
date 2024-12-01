@@ -10,9 +10,8 @@ import {
 } from '@/components/ui/table';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { $Enums } from '@prisma/client';
+import { $Enums, Hari } from '@prisma/client';
 import { convertIsoTime } from '@/lib/convert-iso-time';
-import { convertDate } from '@/lib/convert-date';
 import { postPresensiMulai } from '@/actions/post-presensi-mulai';
 import { postPresensiSelesai } from '@/actions/post-presensi-selesai';
 import { Badge } from './ui/badge';
@@ -20,6 +19,7 @@ import { useEffect, useState } from 'react';
 import { getJadwalMataKuliah } from '@/actions/get-jadwal-mata-kuliah';
 import { isAbsenSelesaiValid } from '@/lib/is-absen-selesai-valid';
 import { isAbsenMulaiValid } from '@/lib/is-absen-masuk-valid';
+import { convertDate } from '@/lib/convert-date';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function TableMatakuliah({
@@ -142,15 +142,14 @@ export default function TableMatakuliah({
               <TableCell className='text-center'>{item.sks}</TableCell>
               <TableCell className='text-right'>{item.jenis}</TableCell>
               <TableCell className='text-right'>
-                {' '}
-                {`${convertDate(`${item.tanggal}`, 7)}`}
+                {convertDate(`${item.tanggal}`, 0)}
               </TableCell>
               <TableCell className='text-right'>{item.hari}</TableCell>
               <TableCell className='text-right'>
-                {`${convertIsoTime(`${item.jamMulai}`, 7)}`}
+                {convertIsoTime(`${item.jamMulai}`, 0)}
               </TableCell>
               <TableCell className='text-right'>
-                {`${convertIsoTime(`${item.jamSelesai}`, 7)}`}
+                {convertIsoTime(`${item.jamSelesai}`, 0)}
               </TableCell>
               <TableCell className='text-right flex flex-wrap gap-2 justify-center items-center'>
                 {item.absenMulai ? (
@@ -160,9 +159,9 @@ export default function TableMatakuliah({
                     onClick={() => handleAbsenDatang(item.id)}
                     disabled={
                       !isAbsenMulaiValid({
-                        currentTime: new Date().toISOString(),
-                        jamMulai: `${item.jamMulai}`,
-                        date: `${item.tanggal}`,
+                        hari: item.hari as Hari,
+                        jamMulai: item.jamMulai,
+                        jamSelesai: item.jamSelesai,
                       })
                     }
                   >
@@ -179,9 +178,9 @@ export default function TableMatakuliah({
                     onClick={() => handleAbsenPulang(item.id)}
                     disabled={
                       !isAbsenSelesaiValid({
-                        currentTime: new Date().toISOString(),
-                        jamSelesai: `${item.jamSelesai}`,
-                        date: `${item.tanggal}`,
+                        jamSelesai: item.jamSelesai,
+                        jamMulai: item.jamMulai,
+                        hari: item.hari as Hari,
                       })
                     }
                   >
