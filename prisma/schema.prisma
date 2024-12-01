@@ -51,6 +51,7 @@ model Jadwal {
   mataKuliahId String
   mataKuliah   MataKuliah @relation(fields: [mataKuliahId], references: [id])
   hari         Hari
+  tanggal      DateTime   @db.Date
   jamMulai     DateTime   @db.Time
   jamSelesai   DateTime   @db.Time
   createdAt    DateTime   @default(now())
